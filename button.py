@@ -1,39 +1,22 @@
 import pygame
 
 class Button():
-    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+    def __init__(self, x, y, image):
         self.image = image
-        self.x_pos = pos[0]
-        self.y_pos = pos[1]
-        self.font = font
-        self.base_color, self.hovering_color = base_color, hovering_color
-        self.text_input = text_input
-        self.text = self.font.render(self.text_input, True, self.base_color)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
 
-        if self.image is None:
-            # Se não houver imagem, o botão será apenas o texto
-            self.image = self.text
-            self.rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
-        else:
-            # Definindo o retângulo da imagem
-            self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+    def draw(self, surface):
+        action = False
+        pos = pygame.mouse.get_pos()
 
-        # Centraliza o texto no botão
-        self.text_rect = self.text.get_rect(center=self.rect.center)
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
+                self.clicked = True
+                action = True  # só ativa ação se houve clique dentro do botão
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
 
-    def update(self, screen):
-        # Exibe a imagem (se houver) e o texto
-        if self.image is not None:
-            screen.blit(self.image, self.rect)
-        screen.blit(self.text, self.text_rect)
-
-    def checkForInput(self, position):
-        # Verifica se o clique está dentro do retângulo do botão
-        return self.rect.collidepoint(position)
-
-    def changeColor(self, position):
-        # Altera a cor do texto quando o mouse está sobre o botão
-        if self.rect.collidepoint(position):
-            self.text = self.font.render(self.text_input, True, self.hovering_color)
-        else:
-            self.text = self.font.render(self.text_input, True, self.base_color)
+        surface.blit(self.image, (self.rect.x, self.rect.y))
+        return action
