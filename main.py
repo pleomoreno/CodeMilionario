@@ -2,6 +2,7 @@ import pygame
 import button
 
 start = pygame.init()
+music = pygame.mixer.init()
 
 # create display window
 SCREEN_WIDTH = 1080
@@ -28,6 +29,14 @@ exit_button = button.Button(427, 560, exit_img)
 # load logo image
 logo_img = pygame.image.load("images/logo.png").convert_alpha()
 
+# music loader
+pygame.mixer.music.load('assets/mainmenu.mp3')
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.5)
+
+# sound effects loader
+click_sound = pygame.mixer.Sound('assets/button.mp3')
+
 # game loop
 run = True
 while run:
@@ -39,10 +48,13 @@ while run:
     clicked_exit = exit_button.draw(screen)
 
     if clicked_start:
+        click_sound.play()
         print("Start button clicked!")
     if clicked_options:
+        click_sound.play()
         print("Options button clicked!")
     if clicked_exit:
+        click_sound.play()
         print("Exit button clicked!")
         run = False
 
