@@ -9,19 +9,19 @@ class MainMenu:
         self.options_clicked = False
         self.exit_clicked = False
 
-        self.start_button = Button(427, 260, assets.start_img)
+        self.jogar_button = Button(427, 260, assets.jogar_img)
         self.options_button = Button(427, 410, assets.options_img)
         self.exit_button = Button(427, 560, assets.exit_img)
 
-    # Update and render buttons, check clicks
+    # Draw buttons and check clicks
     def update(self):
-        start = self.start_button.draw(self.screen)
+        jogar = self.jogar_button.draw(self.screen)
         options = self.options_button.draw(self.screen)
         exit_ = self.exit_button.draw(self.screen)
 
         self.options_clicked = options
         self.exit_clicked = exit_
-        return start
+        return jogar
 
 # Options menu screen logic
 class OptionsMenu:
@@ -35,28 +35,29 @@ class OptionsMenu:
 
         self.music_button = Button(427, 230, assets.music_img)
         self.sound_button = Button(427, 380, assets.sound_img)
-        self.back_button = Button(30, 600, assets.back_img)
+        self.back_button = Button(10, 650, assets.back_img)
         self.fullscreen_button = Button(427, 530, assets.fullscreen_img)
 
-    # Display the options screen and handle input
+        pygame.mixer.music.set_volume(self.volume)
+        self.assets.click_sound.set_volume(self.volume if self.sound_on else 0)
+
     def show(self):
-        # Waits for the mouse button to be released before proceeding
-        while pygame.mouse.get_pressed()[0] == 1:
+        # Wait mouse release before continuing
+        while pygame.mouse.get_pressed()[0]:
             pygame.event.get()
             pygame.time.wait(10)
         pygame.event.clear(pygame.MOUSEBUTTONDOWN)
+
         running = True
         while running:
             self.screen.blit(self.assets.background, (0, 0))
-            text = self.assets.font.render("Options", True, (0, 227, 197))
+            text = self.assets.font.render("Opções", True, (0, 227, 197))
             self.screen.blit(text, (540 - text.get_width() // 2, 50))
 
-            # Draw checkboxes
             self._draw_checkbox(self.music_playing, 680, 245)
             self._draw_checkbox(self.sound_on, 680, 395)
             self._draw_checkbox(self.is_fullscreen, 680, 545)
 
-            # Draw buttons
             if self.music_button.draw(self.screen):
                 self.assets.click_sound.play()
                 self.toggle_music()
@@ -76,10 +77,12 @@ class OptionsMenu:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     if 340 < event.pos[0] < 740 and 300 < event.pos[1] < 320:
                         self.volume = (event.pos[0] - 340) / 400
                         pygame.mixer.music.set_volume(self.volume)
+                        if self.sound_on:
+                            self.assets.click_sound.set_volume(self.volume)
 
             pygame.display.update()
 
@@ -96,7 +99,7 @@ class OptionsMenu:
         self.music_playing = not self.music_playing
 
     def toggle_sound(self):
-        self.assets.click_sound.set_volume(1 if not self.sound_on else 0)
+        self.assets.click_sound.set_volume(self.volume if not self.sound_on else 0)
         self.sound_on = not self.sound_on
 
     def toggle_fullscreen(self):
