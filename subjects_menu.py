@@ -6,6 +6,7 @@ class SubjectsMenu:
         self.screen = screen
         self.assets = assets
         self.selected_subjects = []
+        self.start_clicked = False
         self.running = True
 
         # Create buttons
@@ -35,6 +36,9 @@ class SubjectsMenu:
                 if button.draw(self.screen):
                     self.assets.click_sound.play()
                     if name == "voltar":
+                        self.running = False
+                    elif name == "start":
+                        self.start_clicked = True
                         self.running = False
                     elif name in self.selected_subjects:
                         self.selected_subjects.remove(name)

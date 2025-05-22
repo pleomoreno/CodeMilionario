@@ -2,6 +2,7 @@ import pygame
 from menus import MainMenu, OptionsMenu
 from assets import Assets
 from subjects_menu import SubjectsMenu
+from game_screen import GameScreen
 
 class Game:
     # Main game controller class
@@ -20,6 +21,7 @@ class Game:
         self.main_menu = MainMenu(self.screen, self.assets)
         self.options_menu = OptionsMenu(self.screen, self.assets)
         self.subjects_menu = SubjectsMenu(self.screen, self.assets)
+        self.game_screen = GameScreen(self.screen, self.assets)
         self.running = True
 
     def run(self):
@@ -32,8 +34,9 @@ class Game:
 
             if self.main_menu.update():
                 self.assets.click_sound.play()
-                print("Start clicked!")
                 self.subjects_menu.show()
+                if self.subjects_menu.start_clicked:
+                    self.game_screen.show()
 
             if self.main_menu.options_clicked:
                 self.assets.click_sound.play()
