@@ -1,4 +1,4 @@
-# Entry point of the game: creates and runs the main game instance
+# Ponto de entrada do jogo: inicia o loop principal do jogo.
 
 from game import Game
 
