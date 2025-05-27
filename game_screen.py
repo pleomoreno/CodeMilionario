@@ -67,7 +67,6 @@ class GameScreen:
         ]
 
     def _setup_for_new_question(self):
-        """Carrega nova pergunta e atualiza botões de ajuda."""
         if self.last_answer_was_correct and self.help_used_for_current_question:
             if self.help_lives_remaining > 0:
                 self.help_lives_remaining -= 1
@@ -96,7 +95,6 @@ class GameScreen:
                 print(f"AVISO CRÍTICO: Nenhuma imagem encontrada para {name_key}.")
 
     def _display_feedback_popup(self):
-        """Exibe o popup com o resultado da resposta."""
         if not self.show_feedback_popup: return
         w, h = 450, 150
         x = (self.screen.get_width() - w) // 2
@@ -109,7 +107,6 @@ class GameScreen:
         self.screen.blit(text_surface, text_rect)
 
     def _display_hint_box(self):
-        """Exibe a dica da pergunta atual."""
         if not self.show_hint_box or not self.current_question_data: return
         hint = self.current_question_data.get("tip", "Dica não disponível.")
         tip_image = getattr(self.assets, 'tip_box_img', None)
@@ -137,7 +134,6 @@ class GameScreen:
     def show(self):
         self._setup_for_new_question()
 
-        # Espera soltar o clique inicial
         while pygame.mouse.get_pressed()[0]:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -156,7 +152,6 @@ class GameScreen:
                 if event.type == pygame.QUIT:
                     self.running_show_loop = False
 
-                # Processa clique no popup
                 if self.show_feedback_popup and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     action_taken_this_frame = True
                     clicked_on_arrow = False
@@ -169,6 +164,7 @@ class GameScreen:
                     else:
                         if self.left_arrow_button.rect.collidepoint(mouse_pos):
                             if hasattr(self.assets, 'click_sound'): self.assets.click_sound.play()
+                            pygame.time.wait(200)  # EVITA CLIQUE DUPLO
                             self.running_show_loop = False
                             clicked_on_arrow = True
                     if clicked_on_arrow:
@@ -195,7 +191,6 @@ class GameScreen:
                     btn.rect.top = arrow_y
                     btn.draw(self.screen)
             else:
-                # Botões de resposta
                 for key, button in self.answer_buttons.items():
                     if key in self.eliminated_answers:
                         button.draw(self.screen)
@@ -212,6 +207,18 @@ class GameScreen:
                         if key == correct:
                             self.feedback_popup_message = "Parabéns! Resposta correta!"
                             self.last_answer_was_correct = True
+                            score_table = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 300000, 400000, 500000, 1000000]
+                            earned = score_table[self.question_index] if self.question_index < len(score_table) else 0
+                            import json, os
+                            ranking_file = "ranking_data.json"
+                            if os.path.exists(ranking_file):
+                                with open(ranking_file, "r", encoding="utf-8") as f:
+                                    ranking_data = json.load(f)
+                            else:
+                                ranking_data = {}
+                            ranking_data["teste"] = ranking_data.get("teste", 0) + earned
+                            with open(ranking_file, "w", encoding="utf-8") as f:
+                                json.dump(ranking_data, f, indent=2)
                         else:
                             self.feedback_popup_message = f"Ops! A resposta era {correct}."
                             self.last_answer_was_correct = False

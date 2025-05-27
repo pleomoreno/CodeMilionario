@@ -1,5 +1,6 @@
 import pygame
 from button import Button
+from ranking_screen import RankingScreen
 
 class SubjectsMenu:
     """
@@ -66,7 +67,8 @@ class SubjectsMenu:
 
                     elif name == "ranking":
                         self.assets.click_sound.play()
-                        # Lógica do ranking ainda não implementada.
+                        ranking_screen = RankingScreen(self.screen, self.assets)
+                        ranking_screen.run()
 
                     else:
                         self.assets.click_sound.play()
